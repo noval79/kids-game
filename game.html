@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Mengenal Binatang</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Comic Sans MS', cursive;
+            background: linear-gradient(135deg, #87CEEB 0%, #98FB98 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 10px;
+        }
+
+        .game-container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            padding: 20px;
+            max-width: 600px;
+            width: 100%;
+            text-align: center;
+        }
+
+        h1 {
+            color: #FF6B6B;
+            font-size: 2.5em;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .menu {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .menu-btn {
+            background: linear-gradient(45deg, #FF6B6B, #FFE66D);
+            color: white;
+            border: none;
+            padding: 15px 25px;
+            border-radius: 15px;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .menu-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        }
+
+        .menu-btn:active {
+            transform: translateY(0);
+        }
+
+        .game-area {
+            display: none;
+            min-height: 400px;
+            padding: 20px;
+        }
+
+        .game-area.active {
+            display: block;
+        }
+
+        .animal-card {
+            background: #FFF8DC;
+            border: 3px solid #FFD700;
+            border-radius: 15px;
+            padding: 20px;
+            margin: 10px auto;
+            max-width: 300px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .animal-card:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+        }
+
+        .animal-emoji {
+            font-size: 4em;
+            margin-bottom: 10px;
+        }
+
+        .animal-name {
+            font-size: 1.8em;
+            color: #2E8B57;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .play-sound-btn {
+            background: linear-gradient(45deg, #4ECDC4, #45B7D1);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-size: 1em;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        .counting-game {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .animals-display {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+            margin: 20px 0;
+        }
+
+        .animal-count {
+            font-size: 2em;
+            margin: 0 5px;
+        }
+
+        .answer-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .answer-btn {
+            background: linear-gradient(45deg, #96CEB4, #FFEAA7);
+            color: #2d3436;
+            border: none;
+            padding: 15px 25px;
+            border-radius: 10px;
+            font-size: 1.5em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .answer-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .answer-btn.correct {
+            background: linear-gradient(45deg, #00b894, #00cec9);
+            color: white;
+        }
+
+        .answer-btn.wrong {
+            background: linear-gradient(45deg, #e17055, #d63031);
+            color: white;
+        }
+
+        .score {
+            font-size: 1.5em;
+            color: #2E8B57;
+            font-weight: bold;
+            margin: 20px 0;
+        }
+
+        .back-btn {
+            background: linear-gradient(45deg, #74b9ff, #0984e3);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-size: 1em;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+
+        .question {
+            font-size: 1.8em;
+            color: #2E8B57;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        .quiz-options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .quiz-btn {
+            background: linear-gradient(45deg, #FFEAA7, #FDCB6E);
+            color: #2d3436;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 10px;
+            font-size: 1.2em;
+            cursor: pointer;
+            min-width: 200px;
+            transition: all 0.3s ease;
+        }
+
+        .quiz-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        @media (max-width: 600px) {
+            h1 {
+                font-size: 2em;
+            }
+            
+            .menu-btn {
+                padding: 12px 20px;
+                font-size: 1em;
+            }
+            
+            .animal-emoji {
+                font-size: 3em;
+            }
+            
+            .animal-name {
+                font-size: 1.5em;
+            }
+            
+            .answer-btn {
+                padding: 12px 20px;
+                font-size: 1.2em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <h1>🐾 Game Mengenal Binatang 🐾</h1>
+        
+        <div id="main-menu" class="menu">
+            <button class="menu-btn" onclick="showGame('learn')">🎓 Belajar Nama Hewan</button>
+            <button class="menu-btn" onclick="showGame('count')">🔢 Hitung Hewan</button>
+            <button class="menu-btn" onclick="showGame('quiz')">🧠 Kuis Hewan</button>
+        </div>
+
+        <!-- Game Belajar Nama Hewan -->
+        <div id="learn-game" class="game-area">
+            <h2>🎓 Belajar Nama Hewan</h2>
+            <p style="color: #666; margin-bottom: 20px;">Klik hewan untuk mendengar suaranya!</p>
+            <div id="animals-grid"></div>
+            <button class="back-btn" onclick="backToMenu()">🏠 Kembali ke Menu</button>
+        </div>
+
+        <!-- Game Hitung Hewan -->
+        <div id="count-game" class="game-area">
+            <h2>🔢 Hitung Hewan</h2>
+            <div class="counting-game">
+                <div class="question" id="count-question"></div>
+                <div class="animals-display" id="animals-to-count"></div>
+                <div class="answer-buttons" id="count-answers"></div>
+                <div class="score" id="count-score">Skor: 0</div>
+            </div>
+            <button class="back-btn" onclick="backToMenu()">🏠 Kembali ke Menu</button>
+        </div>
+
+        <!-- Game Kuis -->
+        <div id="quiz-game" class="game-area">
+            <h2>🧠 Kuis Hewan</h2>
+            <div class="quiz-area">
+                <div class="question" id="quiz-question"></div>
+                <div class="animal-emoji" id="quiz-emoji"></div>
+                <div class="quiz-options" id="quiz-options"></div>
+                <div class="score" id="quiz-score">Skor: 0</div>
+            </div>
+            <button class="back-btn" onclick="backToMenu()">🏠 Kembali ke Menu</button>
+        </div>
+    </div>
+
+    <script>
+        const animals = [
+            {
+                name: "Kucing",
+                emoji: "🐱",
+                sound: "sounds/kucing.mp3",
+                soundText: "Meong meong!"
+            },
+            {
+                name: "Anjing",
+                emoji: "🐶",
+                sound: "sounds/anjing.mp3",
+                soundText: "Guk guk!"
+            },
+            {
+                name: "Sapi",
+                emoji: "🐄",
+                sound: "sounds/sapi.mp3",
+                soundText: "Mooo!"
+            },
+            {
+                name: "Ayam",
+                emoji: "🐓",
+                sound: "sounds/ayam.mp3",
+                soundText: "Kukuruyuk!"
+            },
+            {
+                name: "Bebek",
+                emoji: "🦆",
+                sound: "sounds/bebek.mp3",
+                soundText: "Kwek kwek!"
+            },
+            {
+                name: "Domba",
+                emoji: "🐑",
+                sound: "sounds/domba.mp3",
+                soundText: "Embek embek!"
+            },
+            {
+                name: "Babi",
+                emoji: "🐷",
+                sound: "sounds/babi.mp3",
+                soundText: "Ngok ngok!"
+            },
+            {
+                name: "Kuda",
+                emoji: "🐴",
+                sound: "sounds/kuda.mp3",
+                soundText: "Hiiiih prrrrrr!"
+            },
+            {
+                name: "Gajah",
+                emoji: "🐘",
+                sound: "sounds/gajah.mp3",
+                soundText: "Pouuung!"
+            },
+            {
+                name: "Singa",
+                emoji: "🦁",
+                sound: "sounds/singa.mp3",
+                soundText: "Roaaaar!"
+            }
+        ];
+
+        let currentGame = '';
+        let countScore = 0;
+        let quizScore = 0;
+        let currentCountQuestion = 0;
+        let currentQuizQuestion = 0;
+
+        function showGame(gameType) {
+            // Hide all games
+            document.querySelectorAll('.game-area').forEach(area => {
+                area.classList.remove('active');
+            });
+            document.getElementById('main-menu').style.display = 'none';
+
+            // Show selected game
+            currentGame = gameType;
+            
+            if (gameType === 'learn') {
+                document.getElementById('learn-game').classList.add('active');
+                initLearnGame();
+            } else if (gameType === 'count') {
+                document.getElementById('count-game').classList.add('active');
+                initCountGame();
+            } else if (gameType === 'quiz') {
+                document.getElementById('quiz-game').classList.add('active');
+                initQuizGame();
+            }
+        }
+
+        function backToMenu() {
+            document.querySelectorAll('.game-area').forEach(area => {
+                area.classList.remove('active');
+            });
+            document.getElementById('main-menu').style.display = 'flex';
+            
+            // Reset scores
+            countScore = 0;
+            quizScore = 0;
+            currentCountQuestion = 0;
+            currentQuizQuestion = 0;
+        }
+
+        function initLearnGame() {
+            const grid = document.getElementById('animals-grid');
+            grid.innerHTML = '';
+            
+            animals.forEach(animal => {
+                const card = document.createElement('div');
+                card.className = 'animal-card';
+                card.innerHTML = `
+                    <div class="animal-emoji">${animal.emoji}</div>
+                    <div class="animal-name">${animal.name}</div>
+                    <button class="play-sound-btn" onclick="playAnimalSound('${animal.soundText}', '${animal.sound}')">🔊 Dengar Suara</button>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function playAnimalSound(soundText, soundFile) {
+            // Try to play the actual audio file
+            if (soundFile) {
+                const audio = new Audio(soundFile);
+                audio.volume = 0.7; // Set volume to 70%
+                
+                audio.play().catch(error => {
+                    console.log('Audio playback failed:', error);
+                    // If audio fails, show text feedback
+                    showSoundBubble(soundText);
+                });
+                
+                // Show visual feedback regardless of audio success
+                showSoundBubble(soundText);
+            } else {
+                // Fallback to text only
+                showSoundBubble(soundText);
+            }
+        }
+
+        function showSoundBubble(soundText) {
+            // Create a speech bubble effect
+            const bubble = document.createElement('div');
+            bubble.style.cssText = `
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                background: #FFE66D;
+                color: #2d3436;
+                padding: 20px;
+                border-radius: 20px;
+                font-size: 1.8em;
+                font-weight: bold;
+                box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+                z-index: 1000;
+                animation: bounce 0.5s ease;
+            `;
+            
+            // Add CSS animation
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes bounce {
+                    0% { transform: translate(-50%, -50%) scale(0); }
+                    50% { transform: translate(-50%, -50%) scale(1.1); }
+                    100% { transform: translate(-50%, -50%) scale(1); }
+                }
+            `;
+            document.head.appendChild(style);
+            
+            bubble.textContent = soundText;
+            document.body.appendChild(bubble);
+            
+            setTimeout(() => {
+                document.body.removeChild(bubble);
+                document.head.removeChild(style);
+            }, 2000);
+        }
+
+        function initCountGame() {
+            countScore = 0;
+            currentCountQuestion = 0;
+            document.getElementById('count-score').textContent = `Skor: ${countScore}`;
+            generateCountQuestion();
+        }
+
+        function generateCountQuestion() {
+            const animal = animals[Math.floor(Math.random() * animals.length)];
+            const count = Math.floor(Math.random() * 5) + 1;
+            
+            document.getElementById('count-question').textContent = `Berapa banyak ${animal.name}?`;
+            
+            const display = document.getElementById('animals-to-count');
+            display.innerHTML = '';
+            
+            for (let i = 0; i < count; i++) {
+                const animalElement = document.createElement('div');
+                animalElement.className = 'animal-count';
+                animalElement.textContent = animal.emoji;
+                display.appendChild(animalElement);
+            }
+            
+            // Generate answer options
+            const answers = document.getElementById('count-answers');
+            answers.innerHTML = '';
+            
+            const options = [count];
+            while (options.length < 4) {
+                const wrong = Math.floor(Math.random() * 5) + 1;
+                if (!options.includes(wrong)) {
+                    options.push(wrong);
+                }
+            }
+            
+            // Shuffle options
+            options.sort(() => Math.random() - 0.5);
+            
+            options.forEach(option => {
+                const btn = document.createElement('button');
+                btn.className = 'answer-btn';
+                btn.textContent = option;
+                btn.onclick = () => checkCountAnswer(option, count, btn);
+                answers.appendChild(btn);
+            });
+        }
+
+        function checkCountAnswer(selected, correct, btn) {
+            const buttons = document.querySelectorAll('#count-answers .answer-btn');
+            
+            buttons.forEach(button => {
+                button.disabled = true;
+                if (parseInt(button.textContent) === correct) {
+                    button.classList.add('correct');
+                } else {
+                    button.classList.add('wrong');
+                }
+            });
+            
+            if (selected === correct) {
+                countScore += 10;
+                playAnimalSound('Benar! 🎉');
+            } else {
+                playAnimalSound('Salah! Coba lagi 😊');
+            }
+            
+            document.getElementById('count-score').textContent = `Skor: ${countScore}`;
+            
+            setTimeout(() => {
+                currentCountQuestion++;
+                if (currentCountQuestion < 10) {
+                    generateCountQuestion();
+                } else {
+                    playAnimalSound(`Permainan selesai! Skor akhir: ${countScore}`);
+                }
+            }, 2000);
+        }
+
+        function initQuizGame() {
+            quizScore = 0;
+            currentQuizQuestion = 0;
+            document.getElementById('quiz-score').textContent = `Skor: ${quizScore}`;
+            generateQuizQuestion();
+        }
+
+        function generateQuizQuestion() {
+            const animal = animals[Math.floor(Math.random() * animals.length)];
+            
+            document.getElementById('quiz-question').textContent = 'Hewan apakah ini?';
+            document.getElementById('quiz-emoji').textContent = animal.emoji;
+            
+            const options = document.getElementById('quiz-options');
+            options.innerHTML = '';
+            
+            const answers = [animal.name];
+            while (answers.length < 4) {
+                const wrong = animals[Math.floor(Math.random() * animals.length)].name;
+                if (!answers.includes(wrong)) {
+                    answers.push(wrong);
+                }
+            }
+            
+            // Shuffle options
+            answers.sort(() => Math.random() - 0.5);
+            
+            answers.forEach(answer => {
+                const btn = document.createElement('button');
+                btn.className = 'quiz-btn';
+                btn.textContent = answer;
+                btn.onclick = () => checkQuizAnswer(answer, animal.name, btn);
+                options.appendChild(btn);
+            });
+        }
+
+        function checkQuizAnswer(selected, correct, btn) {
+            const buttons = document.querySelectorAll('#quiz-options .quiz-btn');
+            
+            buttons.forEach(button => {
+                button.disabled = true;
+                if (button.textContent === correct) {
+                    button.style.background = 'linear-gradient(45deg, #00b894, #00cec9)';
+                    button.style.color = 'white';
+                } else {
+                    button.style.background = 'linear-gradient(45deg, #e17055, #d63031)';
+                    button.style.color = 'white';
+                }
+            });
+            
+            if (selected === correct) {
+                quizScore += 10;
+                playAnimalSound('Benar! 🎉');
+            } else {
+                playAnimalSound('Salah! Coba lagi 😊');
+            }
+            
+            document.getElementById('quiz-score').textContent = `Skor: ${quizScore}`;
+            
+            setTimeout(() => {
+                currentQuizQuestion++;
+                if (currentQuizQuestion < 10) {
+                    generateQuizQuestion();
+                } else {
+                    playAnimalSound(`Permainan selesai! Skor akhir: ${quizScore}`);
+                }
+            }, 2000);
+        }
+
+        // Initialize the game
+        document.addEventListener('DOMContentLoaded', function() {
+            // Game is ready to play
+        });
+    </script>
+</body>
+</html>
